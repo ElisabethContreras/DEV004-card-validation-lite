@@ -1,67 +1,68 @@
-/* eslint-disable no-mixed-spaces-and-tabs */
-const miValidador = document.querySelector('#cardnumber');
-miValidador.addEventListener('keypress', function (e){
-  if (!soloNumeros(e)){
+const numberInput = document.getElementById('cardnumber');
+numberInput.addEventListener('keypress', function (e){
+  if (!acceptNumber(e)){
     e.preventDefault();
+    console.log(numberInput.value)
     alert('Ingrese sólo números')
   }
 })
 //Solo permite introducir numeros.
-function soloNumeros(e){
+function acceptNumber(e){
   const key = e.charCode;
   return key >= 48 && key <= 57;
 }
 //no valida si esta vacio el campo
-const valido = document.getElementById('cardnumber').value;
-const boton = document.getElementById('boton')
-boton.addEventListener('click', no_validado)
-function no_validado(){
-  if(valido.length === 0){
+const botton = document.getElementById('botton')
+botton.addEventListener('click', saveInput)
+function saveInput(){
+  const inputValue = numberInput.value;
+  if(inputValue.length === 0){
     alert('EL campo es obligatorio')
-    console.log('esta vacio', valido)
+    console.log('esta vacio')
   }
   else{
-    return false
-  }
-}
-const numeroDeTarjeta = document.getElementById('cardnumber');
-const botonValidar = document.getElementById('boton');
-botonValidar.addEventListener('click', esValida)
+    //isValid(inputValue)
+    //console.log(isValid(inputValue))
+    const spanMensaje = document.getElementById('mensaje')
 
-function esValida(){
-  const digitos = String(numeroDeTarjeta.value);
-  const arrayDigitos = []
+    if(isValid(inputValue)) {
 
-  for (let i= 0; i < digitos.length; i++) {
-    arrayDigitos.push(parseInt(digitos[i]));
-    const digitoInvertido = arrayDigitos.reverse();
-    if(i % 2 !== 0){
-      digitoInvertido[i] = digitoInvertido[i] * 2;
-
-      if (digitoInvertido[i] > 9){
-        digitoInvertido[i] = parseInt(String(digitoInvertido[i].charAt(0))) + parseInt(String(digitoInvertido[i].charAt(1)))
-      }
+      spanMensaje.innerHTML = "Tarjeta validada"
+      // aqui debemos poner mensaje de exito
+    } else{
+      // aqui debemos poner mensaje de fallo
+      spanMensaje.innerHTML = "Tarjeta invalida"
     }
-  }
 
-  let suma = 0;
-  for(let i = 1; i < digitoInvertido.length; i++){
-    suma += parseInt(digitoInvertido[i]);
-  }
-  suma = suma % 10;
-  if(digitoInvertido[0] === suma){
-    return true
-  } else{
-    return false
   }
 }
-function validacionDigitos(){
-  let digitos = String(numeroDeTarjeta.value);
 
-  if(digitos.length >= 16){
-    digitos = digitos.slice(0, 16);
-    numeroDeTarjeta.value = parseInt(digitos);
+function isValid(creditCardNumber){
+  const arrayInvertido = creditCardNumber.trim().split("").reverse();
+  const arrayPar = arrayInvertido.filter(function (a, b) {
+    if (b % 2 === 1) return a;
+  });  let arrayImpar = arrayInvertido.filter(function (a, b) {
+    if (b % 2 === 0) return a;
+  });  const arrayNuevo = arrayPar.map(function (parmulti) {
+    const multipar = parmulti * 2;    if (multipar >= 10) {
+      const mayor10 = multipar.toString().split("").map(Number);
+      const arraysuma = mayor10.reduce(function (a, c) {
+        return a + c;
+      });      return arraysuma;
+    }
+    else { return multipar }
+  });
+  arrayImpar = arrayImpar.map(Number)
+  const sumapar = arrayNuevo.reduce(function (a, b) {
+    return a + b;
+  })
+  const sumaImpar = arrayImpar.reduce(function (a, c) {
+    return a + c;
+  })
+  const resultado = sumapar + sumaImpar;
+  if (resultado % 10 === 0) {
+    return true;
+  } else {
+    return false;
   }
 }
-document.write('<br>'+ validacionDigitos(numeroDeTarjeta))
-console.log(validacionDigitos(numeroDeTarjeta));
